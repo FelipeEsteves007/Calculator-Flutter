@@ -1,8 +1,56 @@
 import 'package:calculator/components/myButton.dart';
 import 'package:flutter/material.dart';
 
-class Calculator extends StatelessWidget {
+class Calculator extends StatefulWidget {
   const Calculator({super.key});
+
+  @override
+  State<Calculator> createState() => _CalculatorState();
+}
+
+class _CalculatorState extends State<Calculator> {
+  String input = '0';
+  double? firstOperand;
+  double? secondOperand;
+  String? operator;
+  bool shouldClear = false;
+
+  void _onDigitPressed(String digit) {
+    setState(() {
+      if (input == '0') {
+        input = digit;
+      } else if (input == '0' || shouldClear){
+        input = digit;
+        shouldClear = false;
+      } else {
+        input = input + digit;
+      }
+    });
+  }
+
+  void _onClear() {
+    setState(() {
+        input = '0';  
+    });
+  }
+
+  void _onBackspace() {
+    setState(() {
+      if (input.length > 1) {
+        input = input.substring(0, input.length - 1);
+      } else {
+        input = '0';
+      }
+    });
+  }
+
+  void _operatorPressed(String? op){
+    setState(() {
+      shouldClear = true;
+      firstOperand = double.parse(input);
+      operator = op;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -19,7 +67,14 @@ class Calculator extends StatelessWidget {
         padding: EdgeInsetsGeometry.all(2),
         child: Column(
           children: [
-            Container(color: Colors.black, height: 250),
+            Container(
+              color: Colors.black,
+              height: 250,
+              child: Text(
+                input,
+                style: TextStyle(color: Colors.white, fontSize: 50),
+              ),
+            ),
             Expanded(
               child: Column(
                 children: [
@@ -27,25 +82,33 @@ class Calculator extends StatelessWidget {
                     child: Row(
                       crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: [
-                        myButton(
+                        MyButton(
                           buttonText: 'C',
                           buttonTextColor: Colors.white,
                           buttonBackgroundColor: Colors.grey,
+                          onPressed: _onClear,
                         ),
-                        myButton(
+                        MyButton(
                           buttonText: ',',
                           buttonTextColor: Colors.white,
                           buttonBackgroundColor: Colors.grey,
+                          onPressed: () {
+                            setState(() {
+                              input = ',';
+                            });
+                          },
                         ),
-                        myButton(
+                        MyButton(
                           buttonText: '<-',
                           buttonTextColor: Colors.white,
                           buttonBackgroundColor: Colors.grey,
+                          onPressed: _onBackspace,
                         ),
-                        myButton(
+                        MyButton(
                           buttonText: '÷',
                           buttonTextColor: Colors.white,
                           buttonBackgroundColor: Colors.orange,
+                          onPressed: () => _operatorPressed('÷')
                         ),
                       ],
                     ),
@@ -54,25 +117,29 @@ class Calculator extends StatelessWidget {
                     child: Row(
                       crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: [
-                        myButton(
+                        MyButton(
                           buttonText: '7',
                           buttonTextColor: Colors.white,
                           buttonBackgroundColor: Colors.grey[800],
+                          onPressed: () => _onDigitPressed('7'),
                         ),
-                        myButton(
+                        MyButton(
                           buttonText: '8',
                           buttonTextColor: Colors.white,
                           buttonBackgroundColor: Colors.grey[800],
+                          onPressed: () => _onDigitPressed('8'),
                         ),
-                        myButton(
+                        MyButton(
                           buttonText: '9',
                           buttonTextColor: Colors.white,
                           buttonBackgroundColor: Colors.grey[800],
+                          onPressed: () => _onDigitPressed('9'),
                         ),
-                        myButton(
+                        MyButton(
                           buttonText: 'x',
                           buttonTextColor: Colors.white,
                           buttonBackgroundColor: Colors.orange,
+                          onPressed: () => _operatorPressed('x')
                         ),
                       ],
                     ),
@@ -81,25 +148,29 @@ class Calculator extends StatelessWidget {
                     child: Row(
                       crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: [
-                        myButton(
+                        MyButton(
                           buttonText: '4',
                           buttonTextColor: Colors.white,
                           buttonBackgroundColor: Colors.grey[800],
+                          onPressed: () => _onDigitPressed('4'),
                         ),
-                        myButton(
+                        MyButton(
                           buttonText: '5',
                           buttonTextColor: Colors.white,
                           buttonBackgroundColor: Colors.grey[800],
+                          onPressed: () => _onDigitPressed('5'),
                         ),
-                        myButton(
+                        MyButton(
                           buttonText: '6',
                           buttonTextColor: Colors.white,
                           buttonBackgroundColor: Colors.grey[800],
+                          onPressed: () => _onDigitPressed('6'),
                         ),
-                        myButton(
+                        MyButton(
                           buttonText: '-',
                           buttonTextColor: Colors.white,
                           buttonBackgroundColor: Colors.orange,
+                          onPressed: () => _operatorPressed('-')
                         ),
                       ],
                     ),
@@ -108,25 +179,29 @@ class Calculator extends StatelessWidget {
                     child: Row(
                       crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: [
-                        myButton(
+                        MyButton(
                           buttonText: '1',
                           buttonTextColor: Colors.white,
                           buttonBackgroundColor: Colors.grey[800],
+                          onPressed: () => _onDigitPressed('1'),
                         ),
-                        myButton(
+                        MyButton(
                           buttonText: '2',
                           buttonTextColor: Colors.white,
                           buttonBackgroundColor: Colors.grey[800],
+                          onPressed: () => _onDigitPressed('2'),
                         ),
-                        myButton(
+                        MyButton(
                           buttonText: '3',
                           buttonTextColor: Colors.white,
                           buttonBackgroundColor: Colors.grey[800],
+                          onPressed: () => _onDigitPressed('3'),
                         ),
-                        myButton(
+                        MyButton(
                           buttonText: '+',
                           buttonTextColor: Colors.white,
                           buttonBackgroundColor: Colors.orange,
+                          onPressed: () => _operatorPressed('+')
                         ),
                       ],
                     ),
@@ -135,17 +210,19 @@ class Calculator extends StatelessWidget {
                     child: Row(
                       crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: [
-                        myButton(
+                        MyButton(
                           buttonText: '0',
                           buttonTextColor: Colors.white,
                           buttonBackgroundColor: Colors.grey[800],
                           flex: 3,
+                          onPressed: () => _onDigitPressed('0'),
                         ),
-                        myButton(
+                        MyButton(
                           buttonText: '=',
                           buttonTextColor: Colors.white,
                           buttonBackgroundColor: Colors.orange,
                           flex: 2,
+                          onPressed: () => _operatorPressed('=')
                         ),
                       ],
                     ),

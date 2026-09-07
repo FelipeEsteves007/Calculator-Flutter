@@ -1,17 +1,19 @@
 import 'package:flutter/material.dart';
 
-class myButton extends StatelessWidget {
+class MyButton extends StatelessWidget {
   final String buttonText;
   final Color buttonTextColor;
   final Color? buttonBackgroundColor;
   final int? flex;
+  final VoidCallback onPressed;
 
-  const myButton({
+  const MyButton({
     super.key,
     required this.buttonText,
     required this.buttonTextColor,
     required this.buttonBackgroundColor,
-    this.flex,
+    required this.onPressed,
+    this.flex,    
   });
 
   @override
@@ -22,11 +24,11 @@ class myButton extends StatelessWidget {
         style: TextButton.styleFrom(
           backgroundColor: buttonBackgroundColor,
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(50), 
-            side: BorderSide(width: 2.5),
+            borderRadius: BorderRadius.circular(35), 
+            side: BorderSide(width: 2),
           ),
         ),
-        onPressed: () => (),
+        onPressed: onPressed,
         child: Text(
           buttonText,
           style: TextStyle(color: buttonTextColor, fontSize: 25),
