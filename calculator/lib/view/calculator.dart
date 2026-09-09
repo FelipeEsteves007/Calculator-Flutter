@@ -17,9 +17,7 @@ class _CalculatorState extends State<Calculator> {
 
   void _onDigitPressed(String digit) {
     setState(() {
-      if (input == '0') {
-        input = digit;
-      } else if (input == '0' || shouldClear){
+      if (input == '0' || shouldClear) {
         input = digit;
         shouldClear = false;
       } else {
@@ -28,9 +26,20 @@ class _CalculatorState extends State<Calculator> {
     });
   }
 
+  void _comma() {
+    setState(() {
+      if (!input.contains(',')) {
+        input = input + ',';
+      }
+    });
+  }
+
   void _onClear() {
     setState(() {
-        input = '0';  
+      input = '0';
+      shouldClear = false;
+      firstOperand = null;
+      operator = null;
     });
   }
 
@@ -44,11 +53,56 @@ class _CalculatorState extends State<Calculator> {
     });
   }
 
-  void _operatorPressed(String? op){
+  void _operatorPressed(String? op) {
     setState(() {
       shouldClear = true;
-      firstOperand = double.parse(input);
+      firstOperand = double.tryParse(input.replaceAll(',', '.'));
       operator = op;
+    });
+  }
+
+  void _operations() {
+    if (firstOperand == null || operator == null) return;
+
+    secondOperand = double.tryParse(input.replaceAll(',', '.')) ?? 0;
+    double result = 0.00;
+
+    switch (operator) {
+      case '+':
+        result = firstOperand! + secondOperand!;
+        break;
+      case '-':
+        result = firstOperand! - secondOperand!;
+        break;
+      case 'x':
+        result = firstOperand! * secondOperand!;
+        break;
+      case '÷':
+        if (secondOperand == 0) {
+          setState(() {
+            input = 'Error';
+            shouldClear = true;
+            firstOperand = null;
+            operator = null;
+          });
+          return;
+        } else {
+          result = firstOperand! / secondOperand!;
+          break;
+        }
+      default:
+        return;
+    }
+
+    setState(() {
+      if (result % 1 == 0) {
+        input = result.toInt().toString();
+      } else {
+        input = result.toString().replaceAll('.', ',');
+      }
+        shouldClear = true;
+        firstOperand = null;
+        operator = null;
     });
   }
 
@@ -64,15 +118,17 @@ class _CalculatorState extends State<Calculator> {
         ),
       ),
       body: Padding(
-        padding: EdgeInsetsGeometry.all(2),
+        padding: EdgeInsetsGeometry.all(3),
         child: Column(
           children: [
             Container(
               color: Colors.black,
               height: 250,
-              child: Text(
-                input,
-                style: TextStyle(color: Colors.white, fontSize: 50),
+              child: Center(
+                child: Text(
+                  input,
+                  style: TextStyle(color: Colors.white, fontSize: 75),
+                ),
               ),
             ),
             Expanded(
@@ -92,11 +148,7 @@ class _CalculatorState extends State<Calculator> {
                           buttonText: ',',
                           buttonTextColor: Colors.white,
                           buttonBackgroundColor: Colors.grey,
-                          onPressed: () {
-                            setState(() {
-                              input = ',';
-                            });
-                          },
+                          onPressed: () => _comma(),
                         ),
                         MyButton(
                           buttonText: '<-',
@@ -108,7 +160,7 @@ class _CalculatorState extends State<Calculator> {
                           buttonText: '÷',
                           buttonTextColor: Colors.white,
                           buttonBackgroundColor: Colors.orange,
-                          onPressed: () => _operatorPressed('÷')
+                          onPressed: () => _operatorPressed('÷'),
                         ),
                       ],
                     ),
@@ -139,7 +191,7 @@ class _CalculatorState extends State<Calculator> {
                           buttonText: 'x',
                           buttonTextColor: Colors.white,
                           buttonBackgroundColor: Colors.orange,
-                          onPressed: () => _operatorPressed('x')
+                          onPressed: () => _operatorPressed('x'),
                         ),
                       ],
                     ),
@@ -170,7 +222,7 @@ class _CalculatorState extends State<Calculator> {
                           buttonText: '-',
                           buttonTextColor: Colors.white,
                           buttonBackgroundColor: Colors.orange,
-                          onPressed: () => _operatorPressed('-')
+                          onPressed: () => _operatorPressed('-'),
                         ),
                       ],
                     ),
@@ -201,7 +253,7 @@ class _CalculatorState extends State<Calculator> {
                           buttonText: '+',
                           buttonTextColor: Colors.white,
                           buttonBackgroundColor: Colors.orange,
-                          onPressed: () => _operatorPressed('+')
+                          onPressed: () => _operatorPressed('+'),
                         ),
                       ],
                     ),
@@ -222,7 +274,7 @@ class _CalculatorState extends State<Calculator> {
                           buttonTextColor: Colors.white,
                           buttonBackgroundColor: Colors.orange,
                           flex: 2,
-                          onPressed: () => _operatorPressed('=')
+                          onPressed: () => _operations(),
                         ),
                       ],
                     ),
